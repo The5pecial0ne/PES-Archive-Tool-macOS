@@ -244,7 +244,7 @@ namespace GzsTool.Core.Qar
                 // TODO: HACK to support repacked files
                 if (DataHash == null)
                 {
-                    md5OutputStream.Flush();
+                    md5OutputStream.FlushFinalBlock();
                     DataHash = md5OutputStream.Hash;
                 }
 

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Atvaark's managed CityHash 1.0.3, the hash the Fox Engine uses for file and string names.
+       It used to come in as the CityHash.Net.Legacy NuGet package; GzsTool and FoxTool both need it. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>CityHash</RootNamespace>
+    <AssemblyName>CityHash</AssemblyName>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <DebugType>embedded</DebugType>
+    <!-- The lower-case type aliases (uint64 and friends) mirror the C++ original, so that warning is just noise here. -->
+    <NoWarn>$(NoWarn);CS8981</NoWarn>
+  </PropertyGroup>
+
+</Project>

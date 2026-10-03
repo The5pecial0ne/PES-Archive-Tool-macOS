@@ -25,16 +25,29 @@ namespace GzsTool.Core.Common
             }
         }
 
+        // Archive entries (and the generated xml files) spell their paths the Windows way,
+        // e.g. "Assets\pes16\model\foo.fmdl". On macOS and Linux a backslash is just an
+        // ordinary file name character, so translate to the local separator before we
+        // touch the disk. The xml stays untouched and remains interchangeable with Windows.
+        private static string ToNativePath(string filePath)
+        {
+            return filePath
+                .Replace('\\', Path.DirectorySeparatorChar)
+                .Replace('/', Path.DirectorySeparatorChar)
+                // A leading separator would make Path.Combine ignore the base directory.
+                .TrimStart(Path.DirectorySeparatorChar);
+        }
+
         public Stream ReadFileStream(string filePath)
         {
-            string inputFilePath = Path.Combine(_baseDirectoryPath, filePath);
-            FileStream stream = new FileStream(inputFilePath, FileMode.Open);
+            string inputFilePath = Path.Combine(_baseDirectoryPath, ToNativePath(filePath));
+            FileStream stream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
             return stream;
         }
 
         public void WriteFile(string filePath, Func<Stream> fileContentStream)
         {
-            string outputFilePath = Path.Combine(_baseDirectoryPath, filePath);
+            string outputFilePath = Path.Combine(_baseDirectoryPath, ToNativePath(filePath));
             Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath));
             using (Stream input = fileContentStream())
             using (FileStream output = new FileStream(outputFilePath, FileMode.Create))

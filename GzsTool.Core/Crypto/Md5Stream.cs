@@ -21,7 +21,17 @@ namespace GzsTool.Core.Crypto
         public override void Flush()
         {
             _stream.Flush();
-            _stream.FlushFinalBlock();
+        }
+
+        // Finishing the hash used to live inside Flush(). A wrapping stream is free to call
+        // Flush() whenever it likes though, and the hash can only be finished once, so it
+        // is its own explicit step now.
+        public void FlushFinalBlock()
+        {
+            if (!_stream.HasFlushedFinalBlock)
+            {
+                _stream.FlushFinalBlock();
+            }
         }
 
         public override long Seek(long offset, SeekOrigin origin)

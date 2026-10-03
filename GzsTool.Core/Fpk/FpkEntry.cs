@@ -56,7 +56,7 @@ namespace GzsTool.Core.Fpk
 
         private void Read(Stream input)
         {
-            BinaryReader reader = new BinaryReader(input, Encoding.Default, true);
+            BinaryReader reader = new BinaryReader(input, Encoding.Latin1, true);
             DataOffset = reader.ReadUInt32();
             reader.Skip(4);
             DataSize = reader.ReadInt32();
@@ -117,7 +117,7 @@ namespace GzsTool.Core.Fpk
 
         public void Write(Stream output)
         {
-            BinaryWriter writer = new BinaryWriter(output, Encoding.Default, true);
+            BinaryWriter writer = new BinaryWriter(output, Encoding.Latin1, true);
             writer.Write(DataOffset);
             writer.WriteZeros(4);
             writer.Write(DataSize);
@@ -147,7 +147,10 @@ namespace GzsTool.Core.Fpk
         private bool TryDecryptData(byte[] data, out byte[] result)
         {
             result = new byte[data.Length - 1];
-            var filename = Path.GetFileName(GetFpkEntryFileName().ToLower());
+            // Path.GetFileName only splits on backslashes when running on Windows, so cut
+            // the file name off by hand. The decryption key is derived from it.
+            string entryFileName = GetFpkEntryFileName().ToLowerInvariant();
+            var filename = entryFileName.Substring(entryFileName.LastIndexOfAny(new[] { '\\', '/' }) + 1);
             var hash = Hashing.HashFileNameLegacy(filename, false);
             var key = BitConverter.GetBytes(~hash);
 

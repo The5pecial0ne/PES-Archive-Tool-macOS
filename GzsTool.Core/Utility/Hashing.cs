@@ -332,7 +332,7 @@ namespace GzsTool.Core.Utility
 
         internal static byte[] Md5HashText(string text)
         {
-            return Md5.ComputeHash(Encoding.Default.GetBytes(text));
+            return Md5.ComputeHash(Encoding.Latin1.GetBytes(text));
         }
 
         public static void ReadMd5Dictionary(string path)

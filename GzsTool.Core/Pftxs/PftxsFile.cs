@@ -31,7 +31,7 @@ namespace GzsTool.Core.Pftxs
         
         public override void Read(Stream input)
         {
-            BinaryReader reader = new BinaryReader(input, Encoding.Default, true);
+            BinaryReader reader = new BinaryReader(input, Encoding.Latin1, true);
             int pftxsMagicNumber = reader.ReadInt32(); // PFTXS
             int unknown1 = reader.ReadInt32();
             int unknown2 = reader.ReadInt32();
@@ -68,7 +68,7 @@ namespace GzsTool.Core.Pftxs
 
         public override void Write(Stream output, IDirectory inputDirectory)
         {
-            BinaryWriter writer = new BinaryWriter(output, Encoding.Default, true);
+            BinaryWriter writer = new BinaryWriter(output, Encoding.Latin1, true);
             long ftexHeaderPosition = output.Position;
             output.Position += FtexHeaderSize;
             long texlHeaderPosition = output.Position;

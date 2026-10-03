@@ -28,7 +28,7 @@ namespace GzsTool.Core.Fpk
         
         public override void Read(Stream input)
         {
-            BinaryReader reader = new BinaryReader(input, Encoding.Default, true);
+            BinaryReader reader = new BinaryReader(input, Encoding.Latin1, true);
             uint magicNumber1 = reader.ReadUInt32(); // foxf
             ushort magicNumber2 = reader.ReadUInt16(); // pk
             FpkType = (FpkType) reader.ReadByte(); // ' ' or 'd'
@@ -59,7 +59,7 @@ namespace GzsTool.Core.Fpk
 
         public override void Write(Stream output, IDirectory inputDirectory)
         {
-            BinaryWriter writer = new BinaryWriter(output, Encoding.Default, true);
+            BinaryWriter writer = new BinaryWriter(output, Encoding.Latin1, true);
             const int headerSize = 48;
             int indicesSize = 48*Entries.Count;
             int referenceSize = 16*References.Count;

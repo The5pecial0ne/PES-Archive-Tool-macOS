@@ -43,7 +43,7 @@ namespace GzsTool.Core.Qar
             const uint xorMask3 = 0xD05608C3;
             const uint xorMask4 = 0x532C7319;
 
-            BinaryReader reader = new BinaryReader(input, Encoding.Default, true);
+            BinaryReader reader = new BinaryReader(input, Encoding.Latin1, true);
             uint magicNumber = reader.ReadUInt32(); // SQAR
             Flags = reader.ReadUInt32() ^ xorMask1;
             uint fileCount = reader.ReadUInt32() ^ xorMask2;
@@ -148,7 +148,7 @@ namespace GzsTool.Core.Qar
             int shift = (Flags & 0x800) > 0 ? 12 : 10;
             int alignment = 1 << shift;
 
-            BinaryWriter writer = new BinaryWriter(output, Encoding.Default, true);
+            BinaryWriter writer = new BinaryWriter(output, Encoding.Latin1, true);
             long headerPosition = output.Position;
             output.Skip(headerSize);
             long tableOffset = output.Position;

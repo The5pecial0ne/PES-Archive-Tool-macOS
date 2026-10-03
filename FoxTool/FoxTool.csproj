@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>FoxTool</RootNamespace>
+    <AssemblyName>FoxTool</AssemblyName>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <!-- Properties/AssemblyInfo.cs already carries the assembly attributes. -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DebugType>embedded</DebugType>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <!-- Numbers in the xml must read and write the same way on every machine, whatever its language settings. -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- XmlSerializer leans on reflection, so trimming and Native AOT are deliberately left off. -->
+    <PublishTrimmed>false</PublishTrimmed>
+  </PropertyGroup>
+
+  <!-- Publishing for a specific OS (dotnet publish -r osx-arm64) gives one self-standing executable. -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CityHash\CityHash.csproj" />
+  </ItemGroup>
+
+  <!-- The name dictionary has to sit next to the executable; it is read when decompiling. -->
+  <ItemGroup>
+    <None Update="fox_dictionary.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

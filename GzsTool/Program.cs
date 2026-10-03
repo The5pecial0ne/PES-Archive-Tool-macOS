@@ -33,7 +33,8 @@ namespace GzsTool
 
                 if (File.Exists(path))
                 {
-                    string extension = Path.GetExtension(path);
+                    // Extensions are matched without regard to case, so FOO.FPK works as well.
+                    string extension = Path.GetExtension(path).ToLowerInvariant();
                     switch (extension)
                     {
                         case ".dat":
@@ -65,7 +66,9 @@ namespace GzsTool
 
         private static void ReadDictionaries()
         {
-            string executingAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            // Assembly.Location comes back empty inside a single-file build, so ask the
+            // runtime where the app lives instead. The dictionaries sit right next to it.
+            string executingAssemblyLocation = AppContext.BaseDirectory;
             const string qarDictionaryName = "qar_dictionary.txt";
             try
             {
@@ -112,12 +115,14 @@ namespace GzsTool
             string fileDirectory = Path.GetDirectoryName(path);
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
             string extension = Path.GetExtension(path).Replace(".", "");
-            string outputDirectoryPath = string.Format("{0}\\{1}_{2}", fileDirectory, fileNameWithoutExtension, extension);
+            // Path.Combine picks the right separator for whatever OS we are running on.
+            string outputDirectoryPath = Path.Combine(fileDirectory,
+                string.Format("{0}_{1}", fileNameWithoutExtension, extension));
             string xmlOutputPath = Path.Combine(fileDirectory,
                 string.Format("{0}.xml", Path.GetFileName(path)));
             IDirectory outputDirectory = new FileSystemDirectory(outputDirectoryPath);
 
-            using (FileStream input = new FileStream(path, FileMode.Open))
+            using (FileStream input = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (FileStream xmlOutput = new FileStream(xmlOutputPath, FileMode.Create))
             {
                 T file = new T();
@@ -150,7 +155,7 @@ namespace GzsTool
         private static void WriteArchive(string path)
         {
             var directory = Path.GetDirectoryName(path);
-            using (FileStream xmlInput = new FileStream(path, FileMode.Open))
+            using (FileStream xmlInput = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 ArchiveFile file = ArchiveSerializer.Deserialize(xmlInput) as ArchiveFile;
                 if (file == null)
@@ -166,12 +171,31 @@ namespace GzsTool
         private static void WriteArchive(ArchiveFile archiveFile, string workingDirectory)
         {
             string outputPath = Path.Combine(workingDirectory, archiveFile.Name);
-            string fileSystemInputDirectory = string.Format("{0}\\{1}_{2}", workingDirectory,
-                Path.GetFileNameWithoutExtension(archiveFile.Name), Path.GetExtension(archiveFile.Name).Replace(".", ""));
+            string fileSystemInputDirectory = Path.Combine(workingDirectory,
+                string.Format("{0}_{1}", Path.GetFileNameWithoutExtension(archiveFile.Name),
+                    Path.GetExtension(archiveFile.Name).Replace(".", "")));
             IDirectory inputDirectory = new FileSystemDirectory(fileSystemInputDirectory);
-            using (FileStream output = new FileStream(outputPath, FileMode.Create))
+
+            // Build the archive under a temporary name and only swap it in once it is complete.
+            // If a file turns out to be missing halfway through, the existing archive stays intact.
+            string temporaryPath = outputPath + ".tmp";
+            try
             {
-                archiveFile.Write(output, inputDirectory);
+                using (FileStream output = new FileStream(temporaryPath, FileMode.Create))
+                {
+                    archiveFile.Write(output, inputDirectory);
+                }
+
+                File.Move(temporaryPath, outputPath, true);
+            }
+            catch
+            {
+                if (File.Exists(temporaryPath))
+                {
+                    File.Delete(temporaryPath);
+                }
+
+                throw;
             }
         }
 

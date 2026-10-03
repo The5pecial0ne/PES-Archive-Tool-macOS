@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CityHash/CityHash.csproj" />
+  <Project Path="FoxTool/FoxTool.csproj" />
+  <Project Path="GzsTool.Core/GzsTool.Core.csproj" />
+  <Project Path="GzsTool/GzsTool.csproj" />
+</Solution>

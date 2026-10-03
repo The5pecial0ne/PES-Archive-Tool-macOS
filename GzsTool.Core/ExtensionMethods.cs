@@ -49,7 +49,7 @@ namespace GzsTool.Core
 
         internal static void WriteNullTerminatedString(this BinaryWriter writer, string text)
         {
-            byte[] data = Encoding.Default.GetBytes(text + '\0');
+            byte[] data = Encoding.Latin1.GetBytes(text + '\0');
             writer.Write(data, 0, data.Length);
         }
 

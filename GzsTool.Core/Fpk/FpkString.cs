@@ -27,7 +27,7 @@ namespace GzsTool.Core.Fpk
 
         private void Read(Stream input)
         {
-            BinaryReader reader = new BinaryReader(input, Encoding.Default, true);
+            BinaryReader reader = new BinaryReader(input, Encoding.Latin1, true);
             StringOffset = reader.ReadInt32();
             reader.Skip(4);
             StringLength = reader.ReadInt32();
@@ -51,7 +51,7 @@ namespace GzsTool.Core.Fpk
 
             if (entryNameHash.SequenceEqual(md5Hash) == false)
             {
-                EncryptedValue = Encoding.Default.GetBytes(Value);
+                EncryptedValue = Encoding.Latin1.GetBytes(Value);
                 string resolvedValue;
                 resolved = Hashing.TryGetFileNameFromMd5Hash(md5Hash, Value, out resolvedValue);
                 Value = resolvedValue;
@@ -66,16 +66,16 @@ namespace GzsTool.Core.Fpk
 
         public void WriteString(Stream output)
         {
-            BinaryWriter writer = new BinaryWriter(output, Encoding.Default, true);
+            BinaryWriter writer = new BinaryWriter(output, Encoding.Latin1, true);
             StringOffset = (int) output.Position;
-            string value = ValueEncrypted ? Encoding.Default.GetString(EncryptedValue) : Value;
+            string value = ValueEncrypted ? Encoding.Latin1.GetString(EncryptedValue) : Value;
             StringLength = value.Length;
             writer.WriteNullTerminatedString(value);
         }
 
         public void Write(Stream output)
         {
-            BinaryWriter writer = new BinaryWriter(output, Encoding.Default, true);
+            BinaryWriter writer = new BinaryWriter(output, Encoding.Latin1, true);
             writer.Write(StringOffset);
             writer.WriteZeros(4);
             writer.Write(StringLength);
