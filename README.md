@@ -43,6 +43,8 @@ rebuild the archive.
 
 ### Download (Apple Silicon Macs)
 
+You need an Apple Silicon Mac (M1 or newer) running macOS 14 or newer.
+
 1. Download `PES-Archive-Tool-macOS-arm64.zip` from the
    [latest release](https://github.com/The5pecial0ne/PES-Archive-Tool-macOS/releases/latest) and unzip it.
 2. Move `PES Archive Tool.app` to your Applications folder.
@@ -61,7 +63,10 @@ If you only want the command line tools, the same release has `PES-Archive-Tool-
 with `GzsTool`, `FoxTool` and their dictionary files. Keep them together in one folder and clear the
 download flag the same way: `xattr -dr com.apple.quarantine path/to/the/folder`.
 
-The downloads are built for Apple Silicon (M1 and newer). On an Intel Mac, build from source.
+The downloads are built for Apple Silicon. On an Intel Mac, build from source.
+
+macOS 14 is the oldest version the .NET 10 runtime inside the tools supports. Releases are built and
+tested on macOS 27; older versions back to 14 should work but have not been tried.
 
 ### Build from source
 
@@ -139,6 +144,8 @@ FoxTool/         compiler and decompiler for fox2 and the other Fox Engine xml f
 CityHash/        the hash function both tools use for names (CityHash 1.0.3)
 macos/           the app: one Swift file, its Info.plist, the icon and the script that draws it
 build-macos.sh   builds all of the above and checks the result
+make-release-zips.sh  zips a finished build into the two files attached to a release
+PesArchiveTool.slnx   solution file, for opening all four .NET projects at once in an IDE
 ```
 
 ## What changed compared to the originals

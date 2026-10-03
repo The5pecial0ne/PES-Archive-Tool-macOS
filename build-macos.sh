@@ -89,13 +89,18 @@ fi
 # ---------------------------------------------------------------------------------------------
 APP="dist/PES Archive Tool.app"
 app_built="no"
+# Without this the app would only open on the macOS version it was built on, or newer.
+# macOS 14 is the oldest release the bundled .NET 10 runtime supports, so the app matches that.
+# Keep it in step with LSMinimumSystemVersion in macos/GzsToolApp/Info.plist.
+MIN_MACOS="14.0"
 echo
 if command -v swiftc >/dev/null 2>&1; then
   echo "==> Building $APP"
   # The app used to be called GzsTool.app; clear that one out too so only the current one is left.
   rm -rf "$APP" "dist/GzsTool.app"
   mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-  if swiftc -O -swift-version 5 macos/GzsToolApp/main.swift -o "$APP/Contents/MacOS/PESArchiveTool"; then
+  if swiftc -O -swift-version 5 -target "$(uname -m)-apple-macos$MIN_MACOS" \
+      macos/GzsToolApp/main.swift -o "$APP/Contents/MacOS/PESArchiveTool"; then
     cp macos/GzsToolApp/Info.plist "$APP/Contents/Info.plist"
     # The app looks for the tools and their dictionaries in its own Resources folder.
     cp "$GZSTOOL" "$FOXTOOL" "$OUT"/*_dictionary.txt "$APP/Contents/Resources/"
